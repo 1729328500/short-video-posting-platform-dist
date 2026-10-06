@@ -8,9 +8,11 @@
 
 ## 下载
 
-[查看 GitHub 发行版](https://github.com/1729328500/short-video-posting-platform-dist/releases)
+[从 Gitee 下载发行版](https://gitee.com/guizhou-jubangbang_0/short-video-posting-platform-dist/releases)
 
-本仓库计划导入 Gitee，作为公司同事的主要下载与更新入口。导入完成并验证免登录下载后，会在这里补充 Gitee 下载链接。
+[GitHub 备用发行版入口](https://github.com/1729328500/short-video-posting-platform-dist/releases)
+
+Gitee 分发仓库已导入，README 与上传白名单已验证可免登录读取。正式安装包和更新包发布后，还会单独验证附件能够免登录下载。
 
 发布后，请在发行版页面下载标为“Windows 完整绿色包”的 ZIP 文件。单独的程序更新包用于已有安装，不能代替完整绿色包。
 
@@ -45,19 +47,29 @@
 - 绿色包没有完整解压，或缺少运行环境：重新下载完整绿色包并完整解压。
 - 启动失败：把界面提示或启动窗口中的错误信息发给维护者，并附上正在使用的版本号。
 
-## 维护者：导入 Gitee
+## 维护者：仓库与更新地址
 
-GitHub 仓库的 Git 地址：
+主要分发仓库的 Git 地址：
+
+```text
+https://gitee.com/guizhou-jubangbang_0/short-video-posting-platform-dist.git
+```
+
+GitHub 备用仓库的 Git 地址：
 
 ```text
 https://github.com/1729328500/short-video-posting-platform-dist.git
 ```
 
-在 Gitee 选择“从 URL 导入”，填写上面的地址，仓库路径建议使用 `short-video-posting-platform-dist`，可见性选择“开源（所有人可见）”。
+两个仓库的默认分支均为 `main`。正式发布后，更新清单地址为：
 
-导入后，需要实际验证未登录用户能够读取 README、下载安装包及读取更新清单。如果页面显示公开审核尚未完成，应在审核通过后再向同事发放下载链接。
+```text
+https://gitee.com/guizhou-jubangbang_0/short-video-posting-platform-dist/raw/main/dist/version.json
+```
 
-Git 仓库导入用于迁移已提交文件。GitHub Releases 附件需要另行在 Gitee 发行版中上传，不能仅凭仓库导入就认为安装包已经同步。
+该清单尚未发布，首次发布真实且已验证的更新包后才启用。启动器的更新源基础地址对应上述链接去掉 `/version.json` 的部分。
+
+Git 仓库导入迁移的是已提交文件。后续发布时，需要分别更新 Gitee 与 GitHub 的仓库文件，并分别上传各自的发行版附件；不能仅凭仓库导入就认为安装包已经同步。
 
 ## 维护者：发布约定
 
