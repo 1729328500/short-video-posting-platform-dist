@@ -1,0 +1,74 @@
+# 短视频发布台 · NAS 部署（绿联 DXP4800 Plus / UGOS Pro 的 Docker 可直接用）
+#
+# 用法（在放本文件的目录里执行）：
+#     docker compose build          # 首次构建
+#     docker compose up -d          # 启动
+#     docker compose logs -f app    # 看日志
+#     docker compose down            # 停止（数据卷保留）
+#
+# ★ 更新流程见 deploy/README.md —— 核心是「换镜像、不动数据卷」。
+# ★ 关键前提：**必须先设访问口令再启动**，否则应用会拒绝监听 0.0.0.0（自带守卫）。
+#   没有口令时想设：先用 `docker compose run --rm app --help` 起不来 ——
+#   正确做法是先临时以本机模式起一次设口令，见 README。
+
+services:
+  app:
+    build:
+      context: ..                      # 构建上下文＝项目根目录
+      dockerfile: deploy/Dockerfile
+      args:
+        # ★ 国内直连 registry-1.docker.io 拉不动（实测超时），默认走 daocloud 镜像。
+        #   在能直连 Docker Hub 的环境构建时，把这两行注释掉即可。
+        BASE_IMAGE: docker.m.daocloud.io/library/python:3.12-slim-bookworm
+        PIP_INDEX: https://mirrors.sjtug.sjtu.edu.cn/pypi/web/simple
+    image: shipin-fabu:1.9.5           # ★ 带版本号，别用 latest —— 回滚要靠它
+    container_name: shipin-fabu
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Shanghai
+      # 容器里没有 Edge，用 playwright 自带 chromium（browser_channel.py 也认这个变量）
+      VP_BROWSER_CHANNEL: chromium
+      # 用域名访问时，把域名填进来（防 DNS rebinding 的 Host 白名单）
+      VP_ALLOWED_HOSTS: ""
+      # 虚拟显示分辨率 —— 别太小，有的平台后台布局会挤坏。
+      # ★ 加了 noVNC 之后要比浏览器视口大一圈，留出窗口边框的位置
+      XVFB_SCREEN: 1600x1100x24
+      # ── noVNC（在网页里直接操作容器内的浏览器，用于过平台的二次验证）──
+      # ★ 2026-10-06（安全审查 R4）：**默认关闭**。
+      #   这条通路能让拿到它的人操作一个已登录所有平台的浏览器，且独立于应用访问口令 ——
+      #   原来默认开着、口令是一个仓库里公开的固定值、6080 映射到宿主机所有接口，等于敞开。
+      NOVNC: "0"
+      NOVNC_PORT: "6080"
+      # 启用 noVNC（NOVNC=1）时**必填**，不提供默认值 —— 没给容器就拒绝启动。
+      #   ⚠️ VNC 口令**最多 8 位**（协议限制，超了会被静默截断）。
+      VNC_PASSWORD: ""
+    volumes:
+      # ★ 全部数据（素材/数据库/登录 profile/配置）都在这里。
+      #   更新镜像时这个卷不动，所以登录态和数据都不会丢。
+      # 路径相对 compose 文件所在目录（deploy/），所以用 ../data 指向项目根的 data/
+      - ../data:/data
+    ports:
+      # 直接暴露时用这个；若走 nginx 反代，可改成 "127.0.0.1:8947:8947" 只让宿主机访问
+      - "8947:8947"
+      # noVNC（在网页里操作容器内的浏览器，用于过二次验证）。
+      # ★ 这条通路没有应用层的登录门，只有 VNC 自己的口令（2026-10-06 安全审查 R4）。
+      #   默认只绑**本机** —— 要对外用就自己改，并想清楚谁能碰到这个端口；
+      #   更稳的做法是把它放在有认证的反代/VPN 后面，而不是直接暴露。
+      - "127.0.0.1:6080:6080"
+    # 容器需要跑浏览器，给点共享内存，否则 chromium 容易崩
+    shm_size: "1gb"
+
+  # ── 可选：Nginx 反代（要域名/HTTPS 时用）──
+  # 启动：docker compose --profile proxy up -d
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: shipin-fabu-nginx
+    restart: unless-stopped
+    profiles: ["proxy"]
+    depends_on: [app]
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # 证书放这里（用 HTTPS 时）：./certs:/etc/nginx/certs:ro
+    ports:
+      - "8080:80"
+      # - "8443:443"

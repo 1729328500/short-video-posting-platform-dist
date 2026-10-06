@@ -1,0 +1,8 @@
+*.bat text eol=crlf
+app/requirements-desktop.lock text eol=lf
+app/VERSION text eol=lf
+# ★ 2026-10-06（安全审查 R4 顺带发现）：容器里跑的 shell 脚本必须锁 LF。
+#   本机 core.autocrlf=true，缺了这一行，下次检出会把 deploy/entrypoint.sh
+#   写成 CRLF —— shebang 变成 "#!/bin/sh\r"，容器里直接起不来。
+#   （和上面 *.bat 锁 CRLF 是同一类问题的两个方向。）
+*.sh text eol=lf

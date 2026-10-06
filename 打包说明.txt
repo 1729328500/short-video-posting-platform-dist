@@ -1,0 +1,20 @@
+【短视频发布台 · 源码包】v1.1.0
+版本：v1.1.0（2026-09-26 打包；新增：一键生成各平台适配版＝DeepSeek AI 改写，失败回退基础版）
+
+包含内容：
+- app/                 工具本体源码（Python 标准库服务 + 原生前端）
+  ├─ server.py          本机 HTTP 服务（素材/文案/封面/预检/账号/发布/记录/数据/设置/安全/AI 生成）
+  ├─ publish_worker.py  发布执行器（复用登录窗口 → 创作页 → 投递视频）
+  ├─ login_worker.py    登录窗工作进程（扫码登录用）
+  ├─ platform_rules.json 各平台上传限制规则表（可维护）
+  ├─ ui/                前端（index.html / style.css / app.js）
+  └─ tests/             自测脚本 10 套（Playwright 端到端，共 159 项检查）
+- 01~06 文档           功能清单 / 平台清单 / 决策记录 / UI 板块 / UI 原型 / 开发进度
+- 启动工具.bat         本机启动入口
+- app/start.bat        备用启动
+
+运行环境：本机 Python 3（标准库即可）；扫码登录窗需 playwright + Edge。
+AI 生成：需本机 app/data/ai.json（DeepSeek 密钥；随包不含，运行环境内已配置）。
+说明：本包不含运行数据（视频、登录态、数据库、日志、密钥）。
+自测：python app/tests/test_01_materials.py（同名目录下 test_02 ~ test_10）
+状态：工具已由计划任务托管运行（登录后自启）；桌面双击「短视频发布台」图标即可打开。

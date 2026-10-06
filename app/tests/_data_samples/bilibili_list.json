@@ -1,0 +1,84 @@
+{
+ "archives": {
+  "code": 0,
+  "message": "OK",
+  "ttl": 1,
+  "data": {
+   "page": {
+    "pn": 1,
+    "ps": 10,
+    "count": 19
+   },
+   "class": {
+    "pubed": 19,
+    "not_pubed": 0,
+    "is_pubing": 0
+   },
+   "arc_audits": [
+    {
+     "Archive": {
+      "aid": 117357599070748,
+      "bvid": "BV13Ka96DEJB",
+      "title": "【测试】",
+      "ptime": 1790734914,
+      "ctime": 1790734876,
+      "duration": 24,
+      "tag": "学习,编程,接口"
+     },
+     "stat": {
+      "view": 0,
+      "like": 0,
+      "reply": 0,
+      "favorite": 0,
+      "coin": 0,
+      "share": 0,
+      "danmaku": 0,
+      "vv": 0
+     }
+    },
+    {
+     "Archive": {
+      "aid": 115291015223510,
+      "bvid": "BV1w5n1zPEHA",
+      "title": "建筑修缮行业",
+      "ptime": 1759201529,
+      "ctime": 1759201494,
+      "duration": 89,
+      "tag": "建筑,生活记录,手工"
+     },
+     "stat": {
+      "view": 23,
+      "like": 0,
+      "reply": 0,
+      "favorite": 0,
+      "coin": 0,
+      "share": 0,
+      "danmaku": 0,
+      "vv": 23
+     }
+    },
+    {
+     "Archive": {
+      "aid": 115262795814047,
+      "bvid": "BV1m1nsznEfw",
+      "title": "建筑修缮跑业务",
+      "ptime": 1758770886,
+      "ctime": 1758770847,
+      "duration": 122,
+      "tag": "生活记录,记录,原创,工作,高能"
+     },
+     "stat": {
+      "view": 33,
+      "like": 0,
+      "reply": 0,
+      "favorite": 0,
+      "coin": 0,
+      "share": 0,
+      "danmaku": 0,
+      "vv": 33
+     }
+    }
+   ]
+  }
+ }
+}

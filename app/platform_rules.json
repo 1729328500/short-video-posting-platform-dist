@@ -1,0 +1,61 @@
+{
+  "note": "各平台网页端上传限制（参考值 · 2026-09 公开资料整理）。平台调整后直接改本文件即可，无需改代码。",
+  "platforms": {
+    "douyin": {
+      "name": "抖音",
+      "exts": [".mp4", ".mov"],
+      "max_duration": 1800,
+      "max_size_mb": 4096,
+      "recommend": "竖屏 1080×1920 更优"
+    },
+    "channels": {
+      "name": "视频号",
+      "exts": [".mp4", ".mov"],
+      "max_duration": 3600,
+      "max_size_mb": 1024,
+      "recommend": "建议 mp4（H.264）"
+    },
+    "kuaishou": {
+      "name": "快手",
+      "exts": [".mp4", ".mov"],
+      "max_duration": 3420,
+      "max_size_mb": 2048,
+      "recommend": ""
+    },
+    "xhs": {
+      "name": "小红书",
+      "exts": [".mp4", ".mov"],
+      "max_duration": 900,
+      "max_size_mb": 1024,
+      "recommend": "竖屏 9:16 更优"
+    },
+    "weibo": {
+      "name": "微博",
+      "exts": [".mp4", ".mov"],
+      "max_duration": 900,
+      "max_size_mb": 2048,
+      "recommend": ""
+    },
+    "toutiao": {
+      "name": "头条号",
+      "exts": [".mp4", ".mov", ".avi"],
+      "max_duration": 3600,
+      "max_size_mb": 4096,
+      "recommend": ""
+    },
+    "bilibili": {
+      "name": "哔哩哔哩",
+      "exts": [".mp4", ".mov", ".mkv"],
+      "max_duration": 36000,
+      "max_size_mb": 16384,
+      "recommend": "支持 H.265/AV1"
+    },
+    "xigua": {
+      "name": "西瓜视频",
+      "exts": [".mp4", ".mov"],
+      "max_duration": 7200,
+      "max_size_mb": 8192,
+      "recommend": ""
+    }
+  }
+}

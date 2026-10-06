@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>居帮帮 · 短视频发布台</title>
+<link rel="stylesheet" href="/ui/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand"><span class="logo">🏗</span>居帮帮 · 短视频发布台</div>
+  <span class="vchip" id="appVer">版本读取中…</span>
+  <span class="mini-note" id="verLine" aria-live="polite"></span>
+  <div class="spacer"></div>
+  <div class="statusrow" id="lamps" title="平台登录状态（账号页建成后接入）"></div>
+  <div class="themebox" id="themeBox" title="切换明暗色系">
+    <span class="topt" data-t="light">☀️ 亮色</span>
+    <span class="topt" data-t="dark">🌙 暗色</span>
+  </div>
+</header>
+
+<aside class="side sidenav" id="nav">
+  <div class="nav-item" data-page="publish"><span class="ni">🚀</span>发布台</div>
+  <div class="nav-item" data-page="records"><span class="ni">🧾</span>发布记录</div>
+  <div class="nav-item" data-page="data"><span class="ni">📈</span>数据</div>
+  <div class="nav-item" data-page="library"><span class="ni">🎬</span>素材库</div>
+  <div class="nav-item" data-page="accounts"><span class="ni">👤</span>账号</div>
+  <div class="nav-item" data-page="settings"><span class="ni">⚙️</span>设置</div>
+  <div class="bottom" id="storageHint">数据保存在部署设备<br>视频 / 登录态 / 发布记录</div>
+</aside>
+
+<main class="main">
+
+  <!-- 素材库（已开发） -->
+  <section class="page" id="page-library">
+    <div class="pagehead">
+      <h2>素材库</h2>
+      <span class="chip">拖拽 / 多选上传</span>
+      <span class="chip">封面 · 预检</span>
+      <div class="ph-right">
+        <input id="searchBox" class="search" type="search" placeholder="搜索素材…">
+        <button id="uploadBtn" class="btn primary">＋ 上传视频</button>
+      </div>
+    </div>
+    <div id="dropzone" class="dropzone">把视频拖到这里，或点击上传 · 支持多选</div>
+    <div id="vgrid" class="vgrid"></div>
+    <div id="vempty" class="empty" style="display:none">还没有素材——先上传一个视频吧</div>
+  </section>
+
+  <!-- 发布台（当前阶段：文案编辑） -->
+  <section class="page" id="page-publish">
+    <div class="pagehead">
+      <h2>发布台</h2>
+      <span class="chip">当前阶段：文案编辑</span>
+      <div class="ph-right">
+        <span id="draftState" class="mini-note"></span>
+        <button id="genAllBtn" class="btn ghost">⚡ 一键生成各平台适配版</button>
+        <button id="saveDraftBtn" class="btn primary">保存草稿</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>① 视频<span class="hint">从素材库选择</span></h3>
+      <div class="pubrow">
+        <button id="pubPickBtn" class="btn ghost small">＋ 从本地选择</button>
+        <select id="videoSel" class="search" style="width:280px"><option value="">（或从素材库选择）</option></select>
+        <span id="videoMeta" class="mini-note"></span>
+        <span class="mini-note">本地文件会先存入素材库</span>
+      </div>
+      <!-- 封面：归属这条视频。发布时平台有封面位就填进去，没有就跳过。 -->
+      <div class="pubrow" id="pubCoverRow">
+        <span class="mini-note">封面</span>
+        <img id="pubCoverThumb" alt="" style="display:none;width:46px;height:80px;object-fit:cover;border-radius:6px;border:1px solid var(--line)">
+        <button id="pubCoverBtn" class="btn ghost small">设置封面</button>
+        <span id="pubCoverHint" class="mini-note"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>② 文案<span class="hint">通用写一次，各平台微调</span></h3>
+      <div class="tabsrow">
+        <div class="tabs" id="copyTabs"></div>
+        <span class="tabhint">点 Tab 切换平台 · 带 ✓＝该平台已有一版</span>
+      </div>
+      <div class="field">
+        <label>标题</label>
+        <input id="fTitle" type="text" placeholder="标题…">
+      </div>
+      <div class="field">
+        <label>正文 / 简介</label>
+        <textarea id="fBody" placeholder="正文…"></textarea>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>话题</label>
+        <input id="fTopics" type="text" placeholder="话题用空格分隔，例如：装修 防水 避坑">
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>③ 发布<span class="hint">选平台 → 确认 → 逐平台执行（不并发）</span></h3>
+      <div class="setrow" id="pubPlatRow"></div>
+      <div class="setrow">
+        <label><input type="radio" name="pubmode" value="now" checked> 立即发布</label>
+        <label><input type="radio" name="pubmode" value="schedule"> 定时</label>
+        <input id="pubScheduleAt" type="datetime-local" style="display:none">
+      </div>
+      <div class="setrow">
+        <!-- ★ 2026-09-30 实测事故：这里原来默认 `checked`，而页面**一刷新就回到勾选**，
+             用户没注意 ⇒ 整批发布全走模拟（5 秒"成功"、平台什么都没发），
+             记录里却写着「已发布 ✓」。默认必须是**不勾**：真发是常态，模拟是例外。 -->
+        <label><input type="checkbox" id="pubMock"> 模拟执行（演示，不真实提交）</label>
+        <span class="mini-note">真实提交需平台登录 + 自动化脚本联调</span>
+        <button id="pubStartBtn" class="btn primary" style="margin-left:auto">开始发布 →</button>
+      </div>
+    </div>
+
+    <div class="card" id="pubProgressCard" style="display:none">
+      <h3><span class="bar"></span>发布进度<span class="hint" id="pubBatchHint"></span></h3>
+      <div id="pubProgress"></div>
+      <div class="setrow" id="pubActions"></div>
+    </div>
+  </section>
+
+  <section class="page" id="page-records">
+    <div class="pagehead">
+      <h2>发布记录</h2>
+      <span class="chip" id="recStats">—</span>
+      <div class="ph-right">
+        <input id="recKw" class="search" type="search" placeholder="搜索标题…">
+        <select id="recPlat" class="search"><option value="">全部平台</option><option value="douyin">抖音</option><option value="channels">视频号</option><option value="kuaishou">快手</option><option value="xhs">小红书</option><option value="weibo">微博</option><option value="toutiao">头条号</option><option value="bilibili">哔哩哔哩</option><option value="xigua">西瓜视频</option></select>
+        <select id="recStatus" class="search"><option value="">全部状态</option><option value="success">成功</option><option value="fail">失败</option><option value="manual">需人工</option><option value="canceled">已取消</option><option value="pending">排队中</option><option value="running">进行中</option></select>
+        <button id="recExportBtn" class="btn ghost small">导出 CSV</button>
+        <button id="recRefreshBtn" class="btn ghost small">刷新</button>
+      </div>
+    </div>
+    <div class="card" style="padding:6px 14px">
+      <table class="tbl" id="recTable">
+        <thead><tr><th>时间</th><th>平台</th><th>标题</th><th>状态</th><th>说明</th><th>操作</th></tr></thead>
+        <tbody id="recBody"></tbody>
+      </table>
+    </div>
+  </section>
+  <section class="page" id="page-data">
+    <div class="pagehead">
+      <h2>数据</h2>
+      <span class="chip">数据来自各平台创作后台 · 每天定时播报</span>
+      <div class="ph-right">
+        <span id="dataLast" class="mini-note"></span>
+        <button id="dataFetchBtn" class="btn ghost small">立即抓取</button>
+        <button id="dataReportBtn" class="btn ghost small">立即播报</button>
+      </div>
+    </div>
+    <div class="ggrid g4" id="dataGrid"></div>
+    <div class="card" style="margin-top:14px">
+      <h3><span class="bar"></span>跨平台汇总<span class="hint" id="dataHint"></span></h3>
+      <div id="dataTotal" style="color:var(--text2)">—</div>
+    </div>
+  </section>
+  <section class="page" id="page-accounts">
+    <div class="pagehead">
+      <h2>账号</h2>
+      <span class="chip" id="accountMode">登录一次长期有效 · 全程在网页里完成</span>
+      <div class="ph-right"><button id="acVerifyAllBtn" class="btn ghost small" title="真开一次浏览器核每个平台的登录态，并按实写回状态（状态文件只是上次操作的记录，不一定是事实）">核验登录态</button><button id="acRefreshBtn" class="btn ghost small">刷新状态</button></div>
+    </div>
+    <div class="agrid" id="acGrid"></div>
+    <div class="mhint" id="accountHint" style="margin-top:12px">
+      点【登录】后，弹层里会显示二维码（能自动取到的话）；扫不了、或者这个平台本来就不支持二维码登录，
+      就点弹层左下角<b>【直接操作浏览器】</b>—— 在弹出的浏览器里<b>扫码 / 账号密码 / 短信 / 微信授权都行</b>。
+      登完本页状态自动变绿，不用任何确认操作。注意：8 个平台都登录一遍才算齐活（西瓜视频与抖音共用登录态，登了抖音就行）。
+    </div>
+  </section>
+  <section class="page" id="page-settings">
+    <div class="pagehead">
+      <h2>设置</h2>
+      <span class="chip">全部参数只存本机</span>
+    </div>
+
+    <div class="card" id="cfgBrokenCard" style="display:none;border-color:#e0a800">
+      <h3><span class="bar"></span>⚠️ 配置文件曾损坏，已重置为默认值</h3>
+      <div class="setrow">
+        <span class="mini-note" id="cfgBrokenNote"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>访问口令<span class="hint">加盐哈希存储 · 不落明文；设置后每次打开需输入</span></h3>
+      <div class="setrow">
+        <input id="setPass" class="search" type="password" placeholder="留空＝不启用；输入后点保存" style="width:260px">
+        <button id="savePassBtn" class="btn ghost small">保存口令</button>
+        <span id="passState" class="mini-note"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>发布节奏<span class="hint">发布执行时生效</span></h3>
+      <div class="setrow">平台间隔随机 <input id="setIntMin" class="search num" type="number" min="5" max="600"> – <input id="setIntMax" class="search num" type="number" min="5" max="600"> 秒</div>
+      <div class="setrow">单账号日更不超 <input id="setDaily" class="search num" type="number" min="1" max="20"> 条</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>AI 文案<span class="hint">「一键生成各平台适配版」的改写引擎</span></h3>
+      <div class="setrow">
+        通道：<span id="aiState" class="mini-note">检测中…</span>
+        <label style="margin-left:16px"><input type="checkbox" id="aiEnabled"> 启用 AI 生成</label>
+      </div>
+      <div class="setrow">
+        API 地址 <input id="aiBase" class="search" style="width:220px" placeholder="https://api.deepseek.com">
+        模型 <input id="aiModel" class="search" style="width:150px" placeholder="deepseek-chat">
+      </div>
+      <div class="setrow">
+        API 密钥 <input id="aiKey" class="search" type="password" style="width:260px" placeholder="sk-…" autocomplete="off">
+        <button id="aiSaveBtn" class="btn ghost" style="margin-left:8px">保存</button>
+      </div>
+      <div class="setrow"><span class="mini-note" id="aiKeyHint">密钥只存在服务器上，页面不回显。**留空表示不改动已有密钥**（不是清空）。</span></div>
+      <div class="setrow"><span class="mini-note">开启后点「⚡ 一键生成各平台适配版」由 AI（DeepSeek）按各平台风格改写；关闭后用基础版（各平台同一份文案、仅话题格式规整）。</span></div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>数据播报<span class="hint">每天定时汇总前一天发布的视频数据</span></h3>
+      <div class="setrow">播报时间 <input id="setReport" class="search" type="time" value="20:00"> <span class="mini-note">推送到：企微＋飞书</span></div>
+      <div class="setrow">数据统计范围 <input id="setRange" class="search num" type="number" min="1" max="30"> 天
+        <span class="mini-note">数据页只统计「最近 N 天发布的那些作品」的数据之和；<b>1 = 昨天 0 点到现在</b>（默认，看"昨天发的那批现在怎么样"）</span></div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>通知渠道<span class="hint">发布完成通知的推送开关</span></h3>
+      <div class="setrow">
+        <label><input type="checkbox" id="setNotifyLocal" checked> 本机弹窗</label>
+        <label><input type="checkbox" id="setNotifyWx" checked> 企微</label>
+        <label><input type="checkbox" id="setNotifyFs" checked> 飞书</label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>存储与数据<span class="hint">全本地 · 不上传第三方</span></h3>
+      <div class="setrow" id="dataInfoRow">数据目录：加载中…</div>
+      <div class="setrow">
+        <button id="openFolderBtn" class="btn ghost small">打开数据文件夹</button>
+        <button id="hardenBtn" class="btn ghost small">🔒 加固访问权限</button>
+        <span class="mini-note">加固＝收紧为「当前用户＋管理员」可访问</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>日志<span class="hint">最近 200 行</span><button id="logRefreshBtn" class="btn ghost small" style="margin-left:auto">刷新</button></h3>
+      <pre id="logBox" class="logbox">（点右上「刷新」查看）</pre>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>使用说明</h3>
+      <div class="helps" id="helpText">
+        首次使用：素材库上传视频 → 发布台写文案（可一键生成 8 平台版）→ 账号页逐个登录 → 发布台③勾选平台一键发布（队列执行、进度可视）；记录页可查历史/重试，数据页每天播报。<br>
+        常见问题：① 登录全在网页里完成，<b>不用在自己电脑上装任何东西</b>；各平台支持的登录方式不一样（有的扫码、有的只有账号密码），都能在【直接操作浏览器】里做完，登录态长期保持；② 数据（视频 / 登录态 / 发布记录）全部在服务器上，不在各自电脑；③ 忘记访问口令：让管理员在服务器上重设（<code>docker run --rm -v .../data:/data &lt;镜像&gt; --set-password '新口令'</code>），或删掉 <code>data/auth.json</code>（口令单独存这个文件，删了就是重置为无口令）。
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>版本</h3>
+      <div class="setrow" id="verRow">短视频发布台 · 开发中</div>
+    </div>
+  </section>
+
+</main>
+
+<input type="file" id="fileInput" accept=".mp4,.mov,.m4v,.webm,.mkv,.avi,video/*" multiple hidden>
+<input type="file" id="imageInput" accept="image/png,image/jpeg,image/webp" hidden>
+<input type="file" id="pubFileInput" accept=".mp4,.mov,.m4v,.webm,.mkv,.avi,video/*" multiple hidden>
+<div id="mask" class="mask">
+  <div class="modal">
+    <div class="mhead"><b id="mTitle"></b><button class="icon-btn" id="mClose">✕</button></div>
+    <div class="mbody" id="mBody"></div>
+    <div class="mfoot" id="mFoot"></div>
+  </div>
+</div>
+<div id="lockMask" class="lockmask">
+  <div class="lockbox">
+    <h3>🔒 输入访问口令</h3>
+    <input id="lockInput" class="search" type="password" placeholder="访问口令" style="width:100%">
+    <button id="lockBtn" class="btn primary small">进入</button>
+    <div class="mini-note">忘记口令：删除 app/data/auth.json 即可（口令单独存这个文件）</div>
+    <div class="mini-note" id="authBrokenNote" style="display:none;color:#d9534f"></div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+<script src="/ui/app.js"></script>
+</body>
+</html>

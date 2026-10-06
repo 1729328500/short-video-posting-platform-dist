@@ -1,0 +1,52 @@
+# 运行数据（用户素材/登录态/记录）—— 一律不入库
+data/
+app/data/
+_scratch/
+
+# 构建产物
+*.tar
+*.zip
+shipin-fabu-*.tar
+
+# Python
+__pycache__/
+*.pyc
+
+# 测试临时（浏览器 profile，上百 MB）与截图 —— 注意别带尾部斜杠：
+# `_tmp*/` 只匹配目录，会漏掉 _tmp27_hold.json 这类文件
+app/tests/_tmp*
+app/tests/shots/
+
+# 探针/临时产物
+_r*.json
+
+# 方案 B 遗留（helper/）—— 已明确否掉，且 dist/profiles 里是**浏览器 profile（登录态/cookie）**，绝不能入库
+helper/
+
+# 任何浏览器 profile / 登录态目录 —— 宁可错杀，不能泄凭据
+**/profiles/
+**/*.storage.json
+**/*.storage.json.*.tmp
+
+# 执行计划的临时台账（superpowers 的 sdd 工作区）—— 属于脚手架，不入库
+.superpowers/
+
+# ★ 注意：不要把 .ocr-review/ 加到这里 —— ocr 是 git diff 驱动的，
+#   一进 gitignore 它就看不见镜像文件，"测试也审过了"会变成空话，
+#   而 tools/ocr-review.py 照样打印"镜像了 N 个文件"。详见该脚本的模块 docstring。
+
+# IDE
+.idea/
+app/.idea/
+# Desktop runtime/build and local configuration
+/runtime/
+/browsers/
+/install.json
+/app.new/
+/app.bak/
+/app.failed/
+/.launcher.lock
+/.update.lock
+/.desktop.instance.json
+/.update-*.json
+/.update-download.zip

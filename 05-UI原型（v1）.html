@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>居帮帮 · 短视频发布台（UI 原型 v1）</title>
+<style>
+:root{
+  --bg:#f3f5fa; --panel:#fff; --panel2:#f8fafc; --line:#e6e9f1;
+  --text:#1c2434; --text2:#5b6478; --text3:#98a1b3;
+  --accent:#2f6bff; --accent2:#eaf0ff; --accent3:#d7e3ff;
+  --ok:#12a150; --ok2:#e7f7ee; --warn:#f59e0b; --warn2:#fdf3e3; --bad:#e5484d; --bad2:#fdecec;
+  --radius:12px; --shadow:0 1px 2px rgba(20,30,60,.05), 0 10px 28px rgba(20,30,60,.07);
+}
+[data-theme="dark"]{
+  --bg:#0e1320; --panel:#161d2c; --panel2:#1b2333; --line:#242e44;
+  --text:#e8ecf5; --text2:#9aa5bd; --text3:#5f6b85;
+  --accent:#5b8cff; --accent2:#1c2a4a; --accent3:#2a3d6b;
+  --ok:#38c172; --ok2:#12291c; --warn:#f5b24a; --warn2:#2b2314; --bad:#ff6b6f; --bad2:#331a1c;
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 10px 28px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box; margin:0; padding:0}
+html,body{height:100%}
+body{
+  font-family:-apple-system,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;
+  background:var(--bg); color:var(--text); font-size:13.5px; line-height:1.6;
+  display:grid; grid-template-columns:216px 1fr; grid-template-rows:54px 1fr; height:100vh;
+  min-width:1180px; overflow:hidden;
+}
+/* ---------- 顶栏 ---------- */
+.topbar{
+  grid-column:1/3; display:flex; align-items:center; gap:14px; padding:0 18px;
+  background:var(--panel); border-bottom:1px solid var(--line); z-index:20;
+}
+.brand{display:flex; align-items:center; gap:9px; font-weight:700; font-size:15px}
+.brand .logo{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#2f6bff,#7aa2ff);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px}
+.vchip{font-size:11px;color:var(--text2);background:var(--panel2);border:1px solid var(--line);padding:2px 8px;border-radius:999px}
+.spacer{flex:1}
+.statusrow{display:flex;align-items:center;gap:12px;color:var(--text2);font-size:12px}
+.st{display:flex;align-items:center;gap:5px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.dot.ok{background:var(--ok)} .dot.off{background:var(--text3)} .dot.warn{background:var(--warn)}
+.iconbtn{border:1px solid var(--line);background:var(--panel);color:var(--text2);border-radius:9px;padding:5px 10px;cursor:pointer;font-size:12.5px}
+.iconbtn:hover{border-color:var(--accent);color:var(--accent)}
+.themebox{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:2px;gap:2px}
+.topt{padding:4px 12px;border-radius:8px;font-size:12.5px;color:var(--text2);cursor:pointer;user-select:none;transition:.15s}
+.topt:hover{color:var(--text)}
+.topt.active{background:var(--accent);color:#fff;font-weight:600}
+/* ---------- 侧栏 ---------- */
+.sidenav{background:var(--panel); border-right:1px solid var(--line); padding:12px 10px; display:flex; flex-direction:column; gap:4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;color:var(--text2);font-size:13.5px;user-select:none}
+.nav-item:hover{background:var(--panel2);color:var(--text)}
+.nav-item.active{background:var(--accent2);color:var(--accent);font-weight:600}
+.nav-item .ni{width:18px;text-align:center}
+.sidenav .bottom{margin-top:auto;color:var(--text3);font-size:11.5px;padding:8px 12px;border-top:1px dashed var(--line)}
+/* ---------- 主区 ---------- */
+main{overflow:auto; padding:18px 22px 90px}
+.page{display:none}
+.page.show{display:block}
+.pagehead{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.pagehead h2{font-size:17px}
+.chip{font-size:12px;color:var(--text2);background:var(--panel);border:1px solid var(--line);padding:3px 10px;border-radius:999px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;margin-bottom:16px}
+.card h3{font-size:13.5px;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.card h3 .bar{width:4px;height:14px;border-radius:2px;background:var(--accent);display:inline-block}
+.card h3 .hint{font-weight:400;color:var(--text3);font-size:12px}
+/* 发布台布局 */
+.grid-pub{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}
+.grid-pub .span2{grid-column:1/3}
+/* 视频区 */
+.vrow{display:flex;gap:16px;align-items:center}
+.vthumb{width:150px;height:96px;border-radius:10px;flex:none;background:linear-gradient(135deg,#31435f,#5f769b);display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;position:relative}
+.vthumb .dur{position:absolute;right:6px;bottom:6px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;padding:1px 6px;border-radius:6px}
+.vmeta b{font-size:14px}
+.vmeta div{color:var(--text2);font-size:12.5px;margin-top:3px}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:2px 9px;border-radius:999px}
+.badge.ok{background:var(--ok2);color:var(--ok)}
+.badge.warn{background:var(--warn2);color:var(--warn)}
+.badge.bad{background:var(--bad2);color:var(--bad)}
+.badge.info{background:var(--accent2);color:var(--accent)}
+.vact{margin-left:auto;display:flex;flex-direction:column;gap:8px}
+.coverrow{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);color:var(--text2);font-size:12.5px}
+.frames{display:flex;gap:6px}
+.frame{width:44px;height:26px;border-radius:6px;background:linear-gradient(135deg,#8ba3c9,#b9c9e0);opacity:.55;cursor:pointer}
+.frame.sel{opacity:1;outline:2px solid var(--accent);outline-offset:1px}
+/* 文案区 */
+.tabsrow{display:flex;align-items:flex-end;border-bottom:1px solid var(--line);margin-bottom:14px;gap:10px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap}
+.tabhint{margin-left:auto;font-size:11px;color:var(--text3);padding-bottom:8px;white-space:nowrap}
+.tab{padding:7px 13px;border-radius:9px 9px 0 0;cursor:pointer;color:var(--text2);font-size:13px;border:1px solid transparent;border-bottom:none}
+.tab.active{background:var(--accent2);color:var(--accent);font-weight:600;border-color:var(--line)}
+.tab.off{color:var(--text3)}
+.tab.off:hover{color:var(--accent);background:var(--accent2)}
+.tab.done::after{content:"✓";font-size:10px;color:var(--ok);margin-left:5px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12.5px;color:var(--text2);margin-bottom:5px}
+.field input[type=text],.field textarea{
+  width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:13.5px;color:var(--text);
+  background:var(--panel2);font-family:inherit;
+}
+.field textarea{min-height:96px;resize:vertical}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--accent);background:var(--panel)}
+.counter{font-size:11.5px;color:var(--text3);margin-top:4px}
+.topic-row{display:flex;gap:8px}
+.topic-row .grow{flex:1}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.tchip{font-size:12px;color:var(--accent);background:var(--accent2);border-radius:999px;padding:3px 10px;cursor:pointer}
+.tchip:hover{background:var(--accent3)}
+.helper{display:flex;gap:8px;margin-top:10px}
+/* 发布区 */
+.plats{display:flex;flex-direction:column;gap:8px}
+.plat{display:flex;align-items:center;gap:9px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:var(--panel2)}
+.plat:hover{border-color:var(--accent)}
+.plat input{accent-color:var(--accent)}
+.plat .sub{margin-left:auto;font-size:11.5px;color:var(--text3)}
+.modes{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.mode{display:flex;align-items:center;gap:8px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:var(--panel2)}
+.mode input{accent-color:var(--accent)}
+.timerow{display:none;align-items:center;gap:8px;margin-top:8px;padding:9px 11px;border:1px dashed var(--line);border-radius:10px;color:var(--text2)}
+.timerow.show{display:flex}
+.timerow input[type=datetime-local]{border:1px solid var(--line);border-radius:8px;padding:5px 8px;background:var(--panel);color:var(--text);font-family:inherit}
+.note{font-size:11.5px;color:var(--text3);margin-top:10px;line-height:1.7}
+/* 动作栏 */
+.actionbar{
+  position:sticky;bottom:14px;margin-top:4px;display:flex;align-items:center;gap:12px;
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);
+  padding:12px 16px;z-index:10;
+}
+.actionbar .hint{color:var(--text3);font-size:12px;margin-left:auto}
+.btn{border:none;border-radius:10px;padding:9px 18px;font-size:13.5px;cursor:pointer;font-family:inherit;font-weight:600}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn.ghost{background:var(--panel2);color:var(--text2);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn.small{padding:5px 12px;font-size:12.5px;border-radius:8px}
+/* 表格 */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{ text-align:left;color:var(--text3);font-weight:500;font-size:12px;padding:8px 10px;border-bottom:1px solid var(--line)}
+.tbl td{padding:10px;border-bottom:1px solid var(--line);color:var(--text2)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td b{color:var(--text);font-weight:600}
+.retry{color:var(--accent);cursor:pointer;font-weight:600}
+/* 卡片网格 */
+.ggrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.ggrid.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.gcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
+.gcard .gthumb{height:110px;border-radius:9px;background:linear-gradient(135deg,#31435f,#7e93b8);display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;margin-bottom:10px}
+.gcard .gname{font-weight:600;font-size:13px;margin-bottom:3px}
+.gcard .gmeta{color:var(--text3);font-size:12px}
+.gcard .gact{display:flex;gap:8px;margin-top:10px}
+.stat{font-size:22px;font-weight:700;margin:6px 0 0}
+.stat small{font-size:12px;color:var(--text3);font-weight:400;margin-left:4px}
+.srow{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line)}
+.srow:last-child{border-bottom:none}
+.srow .sname{font-weight:600;width:150px}
+.srow .sdesc{color:var(--text3);font-size:12.5px;flex:1}
+.switch{position:relative;width:38px;height:22px;background:var(--line);border-radius:999px;cursor:pointer;transition:.2s;flex:none}
+.switch::after{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.switch.on{background:var(--accent)}
+.switch.on::after{left:19px}
+.bindsel{border:1px solid var(--line);border-radius:8px;padding:5px 8px;background:var(--panel);color:var(--text);font-family:inherit;font-size:13px;margin-left:6px}
+.acctopt{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;margin-top:6px;cursor:pointer;background:var(--panel2)}
+.acctopt input{accent-color:var(--accent)}
+.mini{font-size:11px;color:var(--text3);margin-left:auto}
+.mini.ok{color:var(--ok)}
+/* 账号卡 */
+.acard{display:flex;gap:12px;align-items:center}
+.acard .alogo{width:40px;height:40px;border-radius:11px;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:19px;border:1px solid var(--line)}
+/* 弹层 */
+.mask{position:fixed;inset:0;background:rgba(12,18,32,.45);display:none;align-items:center;justify-content:center;z-index:60}
+.mask.open{display:flex}
+.modal{width:640px;max-height:78vh;overflow:auto;background:var(--panel);border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.28);padding:18px 20px}
+.modal-head{display:flex;align-items:center;margin-bottom:12px}
+.modal-head b{font-size:15px}
+.modal-head .x{margin-left:auto;cursor:pointer;color:var(--text3);font-size:18px}
+.mhint{color:var(--text2);font-size:12.5px;margin-bottom:10px}
+.ccards{display:flex;flex-direction:column;gap:10px}
+.ccard{border:1px solid var(--line);border-radius:11px;padding:12px 14px;background:var(--panel2)}
+.ccard .crow{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.cline{font-size:12.5px;color:var(--text2);margin-top:3px;word-break:break-all}
+.modal-foot{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+.prow{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:11px;margin-bottom:8px;background:var(--panel2)}
+.prow .pname{width:70px;font-weight:600}
+.prow .psteps{flex:1;display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--text2)}
+.step{display:inline-flex;align-items:center;gap:5px}
+.spin{width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);border-top-color:transparent;display:inline-block;animation:sp 0.8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.prow .pstat{font-size:12.5px;color:var(--text3)}
+.prow .pstat.ok{color:var(--ok);font-weight:600}
+.done{margin-top:12px;padding:12px;border-radius:11px;background:var(--ok2);color:var(--ok);font-weight:600;text-align:center}
+/* toast */
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:rgba(20,28,48,.92);color:#fff;font-size:13px;padding:9px 16px;border-radius:10px;opacity:0;pointer-events:none;transition:.25s;z-index:80}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand"><span class="logo">🏗</span>居帮帮 · 短视频发布台</div>
+  <span class="vchip">UI 原型 v2.3 · 静态演示</span>
+  <div class="spacer"></div>
+  <div class="statusrow">
+    <span class="st"><span class="dot ok"></span>抖音</span>
+    <span class="st"><span class="dot ok"></span>视频号</span>
+    <span class="st"><span class="dot off"></span>快手</span>
+    <span class="st"><span class="dot ok"></span>小红书</span>
+  </div>
+  <div class="themebox" id="themeBox" title="切换明暗色系">
+    <span class="topt active" data-t="light">☀️ 亮色</span>
+    <span class="topt" data-t="dark">🌙 暗色</span>
+  </div>
+</header>
+
+<aside class="sidenav">
+  <div class="nav-item active" id="nav-publish" data-page="publish"><span class="ni">🚀</span>发布台</div>
+  <div class="nav-item" id="nav-records" data-page="records"><span class="ni">🧾</span>发布记录</div>
+  <div class="nav-item" id="nav-data" data-page="data"><span class="ni">📈</span>数据</div>
+  <div class="nav-item" id="nav-library" data-page="library"><span class="ni">🎬</span>素材库</div>
+  <div class="nav-item" id="nav-accounts" data-page="accounts"><span class="ni">👤</span>账号</div>
+  <div class="nav-item" id="nav-settings" data-page="settings"><span class="ni">⚙️</span>设置</div>
+  <div class="bottom">原型的按钮都能点<br>但不会真的发布 🙂</div>
+</aside>
+
+<main>
+
+<!-- ============ 1. 发布台 ============ -->
+<section class="page show" id="page-publish">
+  <div class="grid-pub">
+
+    <div class="card span2">
+      <h3><span class="bar"></span>① 视频<span class="hint">拖入或点击选择 · 自动预检</span></h3>
+      <div class="vrow">
+        <div class="vthumb">▶<span class="dur">01:26</span></div>
+        <div class="vmeta">
+          <b id="vName">卫生间防水节点讲解-0917.mp4</b>
+          <div id="vMeta">01:26 · 1080×1920 · 24.6 MB</div>
+          <div style="margin-top:6px"><span class="badge ok">✅ 预检通过 · 各平台格式 / 时长 / 大小均符合</span></div>
+        </div>
+        <div class="vact">
+          <button class="btn ghost small" onclick="document.getElementById('fileInput').click()">重新选择视频</button>
+          <button class="btn ghost small" onclick="toast('原型演示：切到素材库挑历史视频')">从素材库选</button>
+        </div>
+      </div>
+      <input type="file" id="fileInput" accept="video/*" style="display:none">
+      <div class="coverrow">
+        <span>封面：自动截帧</span>
+        <span class="frames">
+          <span class="frame"></span><span class="frame sel"></span><span class="frame"></span><span class="frame"></span><span class="frame"></span>
+        </span>
+        <button class="btn ghost small" onclick="toast('原型演示：换一帧')">换一帧</button>
+        <button class="btn ghost small" onclick="toast('原型演示：上传自定义封面')">上传自定义</button>
+        <span style="color:var(--text3);font-size:11.5px">各平台封面尺寸自动适配</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>② 文案<span class="hint">填一次，各平台微调</span></h3>
+      <div class="tabsrow">
+        <div class="tabs" id="copyTabs">
+          <div class="tab active" data-plat="common">通用</div>
+        </div>
+        <span class="tabhint">灰色＝未勾选 · 点一下加入发布</span>
+      </div>
+      <div id="copyPanes">
+        <div class="pane" data-plat="common">
+          <div class="field">
+            <label>标题</label>
+            <input type="text" id="titleInput" value="卫生间防水总返工？这3个节点没做对">
+            <div class="counter">已输入 <b id="titleCount">18</b> 字 · 上限参考：抖音 55 / B站 80 / 视频号 16 / 小红书 20</div>
+          </div>
+          <div class="field">
+            <label>正文 / 简介</label>
+            <textarea id="bodyInput">很多业主以为刷两遍防水就完事，其实最容易漏的是管根、阴角和门槛石这三个节点。今天用现场实拍讲清楚标准做法，验收时照这个对照看。</textarea>
+          </div>
+          <div class="field">
+            <label>话题</label>
+            <div class="topic-row">
+              <input type="text" id="topicInput" class="grow" value="#建筑修缮 #防水补漏 #装修避坑">
+              <button class="btn ghost small" onclick="toast('原型演示：打开话题库')">话题库</button>
+            </div>
+            <div class="chips">
+              <span class="tchip">#建筑修缮</span>
+              <span class="tchip">#防水补漏</span>
+              <span class="tchip">#卫生间防水</span>
+              <span class="tchip">#旧房翻新</span>
+              <span class="tchip">#居帮帮</span>
+            </div>
+          </div>
+          <div class="helper">
+            <button class="btn primary small" id="genAllBtn">✨ 一键生成各平台文案</button>
+            <button class="btn ghost small" onclick="toast('原型演示：保存为模板')">📚 存为模板</button>
+            <span style="color:var(--text3);font-size:11.5px;align-self:center">通用里写一次 → 点生成，8 个平台各出一版适配文案</span>
+          </div>
+          <div class="mhint" style="margin-top:8px">发布前会自动做一遍违禁词自查。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>③ 发布<span class="hint">已选 <b id="platCount">2</b> 个平台</span></h3>
+      <div class="plats">
+        <label class="plat"><input type="checkbox" data-plat="douyin" checked><span class="dot ok"></span>抖音<span class="sub">已登录 · 官方号</span></label>
+        <label class="plat"><input type="checkbox" data-plat="channels" checked><span class="dot ok"></span>视频号<span class="sub">已登录</span></label>
+        <label class="plat"><input type="checkbox" data-plat="kuaishou"><span class="dot off"></span>快手<span class="sub">未登录</span></label>
+        <label class="plat"><input type="checkbox" data-plat="xhs"><span class="dot ok"></span>小红书<span class="sub">已登录</span></label>
+        <label class="plat"><input type="checkbox" data-plat="weibo"><span class="dot off"></span>微博<span class="sub">未绑定</span></label>
+        <label class="plat"><input type="checkbox" data-plat="toutiao"><span class="dot off"></span>头条号<span class="sub">未绑定</span></label>
+        <label class="plat"><input type="checkbox" data-plat="bilibili"><span class="dot off"></span>哔哩哔哩<span class="sub">未登录</span></label>
+        <label class="plat"><input type="checkbox" data-plat="xigua"><span class="dot off"></span>西瓜视频<span class="sub">未绑定</span></label>
+      </div>
+      <div class="modes" style="margin-top:14px">
+        <label class="mode"><input type="radio" name="when" value="now" checked>立即发布</label>
+        <label class="mode"><input type="radio" name="when" value="schedule">定时发布</label>
+        <label class="mode"><input type="radio" name="when" value="draft">存草稿（不发出）</label>
+      </div>
+      <div class="timerow" id="timerow">
+        时间：<input type="datetime-local" id="timeInput">
+      </div>
+      <div class="note">拟人节奏：按顺序依次发（间隔随机 60–180 秒）<br>两平台预计 2–4 分钟发完 · 可在「设置」调整</div>
+    </div>
+
+    <div class="actionbar span2">
+      <button class="btn ghost" onclick="toast('原型演示：已存草稿')">存草稿</button>
+      <button class="btn primary" id="btnPreview">预览确认 →</button>
+      <span class="hint">下一步：逐平台过目要发的内容</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 2. 发布记录 ============ -->
+<section class="page" id="page-records">
+  <div class="pagehead">
+    <h2>发布记录</h2>
+    <span class="chip">今日发出 6</span>
+    <span class="chip">成功率 86%</span>
+    <span class="chip">待发布 1</span>
+    <div class="spacer" style="flex:1"></div>
+    <button class="btn ghost small" onclick="toast('原型演示：导出记录')">导出</button>
+  </div>
+  <div class="card">
+    <table class="tbl">
+      <tr><th>时间</th><th>视频</th><th>平台</th><th>状态</th><th>备注</th><th>操作</th></tr>
+      <tr><td>今天 14:41</td><td><b>卫生间防水节点讲解.mp4</b></td><td>抖音</td><td><span class="badge ok">✅ 已发布</span></td><td>—</td><td><span class="retry" onclick="toast('原型演示：重新发布')">重发</span></td></tr>
+      <tr><td>今天 14:41</td><td>卫生间防水节点讲解.mp4</td><td>视频号</td><td><span class="badge ok">✅ 已发布</span></td><td>—</td><td><span class="retry" onclick="toast('原型演示：重新发布')">重发</span></td></tr>
+      <tr><td>今天 14:40</td><td>卫生间防水节点讲解.mp4</td><td>快手</td><td><span class="badge bad">❌ 失败</span></td><td>登录态失效，需重新登录</td><td><span class="retry" onclick="toast('原型演示：先重登再重试')">重试</span></td></tr>
+      <tr><td>今天 12:00</td><td>老房翻新案例合集.mp4</td><td>抖音</td><td><span class="badge info">⏰ 定时中 · 18:00</span></td><td>到点自动发布</td><td><span class="retry" onclick="toast('原型演示：已取消')">取消</span></td></tr>
+      <tr><td>昨天 20:15</td><td>阳台漏水治理实拍.mp4</td><td>小红书</td><td><span class="badge ok">✅ 已发布</span></td><td>—</td><td><span class="retry" onclick="toast('原型演示：重新发布')">重发</span></td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============ 3. 数据 ============ -->
+<section class="page" id="page-data">
+  <div class="pagehead"><h2>数据</h2><span class="chip">每 6 小时自动抓取</span><span class="chip">每天 20:00 播报（前一天发布的视频数据）→ 企微＋飞书</span></div>
+  <div class="ggrid g4">
+    <div class="gcard"><div class="gname">抖音</div><div class="gmeta">播放</div><div class="stat">12.4万 <small>↑8%</small></div><div class="gmeta" style="margin-top:6px">点赞 3216 · 评论 486</div></div>
+    <div class="gcard"><div class="gname">视频号</div><div class="gmeta">播放</div><div class="stat">3.8万 <small>↑5%</small></div><div class="gmeta" style="margin-top:6px">点赞 1104 · 评论 92</div></div>
+    <div class="gcard"><div class="gname">快手</div><div class="gmeta">播放</div><div class="stat">9652 <small>—</small></div><div class="gmeta" style="margin-top:6px">点赞 233 · 评论 31</div></div>
+    <div class="gcard"><div class="gname">小红书</div><div class="gmeta">播放</div><div class="stat">1.1万 <small>↑3%</small></div><div class="gmeta" style="margin-top:6px">点赞 508 · 评论 44</div></div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h3><span class="bar"></span>跨平台汇总（本周）</h3>
+    <div style="color:var(--text2)">发出 <b style="color:var(--text)">23</b> 条 · 总播放 <b style="color:var(--text)">38.6万</b> · 总互动 <b style="color:var(--text)">1.2万</b> · 平均单条播放 <b style="color:var(--text)">1.68万</b></div>
+  </div>
+</section>
+
+<!-- ============ 4. 素材库 ============ -->
+<section class="page" id="page-library">
+  <div class="pagehead">
+    <h2>素材库</h2>
+    <button class="btn ghost small" onclick="toast('原型演示：上传新视频')">+ 上传视频</button>
+  </div>
+  <div class="ggrid">
+    <div class="gcard"><div class="gthumb">▶</div><div class="gname">卫生间防水节点讲解-0917.mp4</div><div class="gmeta">01:26 · 24.6 MB · 今天</div><div class="gact"><button class="btn ghost small" onclick="switchPage('publish')">去发布</button></div></div>
+    <div class="gcard"><div class="gthumb">▶</div><div class="gname">老房翻新案例合集.mp4</div><div class="gmeta">02:10 · 38.2 MB · 昨天</div><div class="gact"><button class="btn ghost small" onclick="switchPage('publish')">去发布</button></div></div>
+    <div class="gcard"><div class="gthumb">▶</div><div class="gname">阳台漏水治理实拍.mp4</div><div class="gmeta">00:58 · 16.4 MB · 昨天</div><div class="gact"><button class="btn ghost small" onclick="switchPage('publish')">去发布</button></div></div>
+    <div class="gcard"><div class="gthumb">▶</div><div class="gname">墙面空鼓修复全过程.mp4</div><div class="gmeta">01:42 · 28.1 MB · 2 天前</div><div class="gact"><button class="btn ghost small" onclick="switchPage('publish')">去发布</button></div></div>
+    <div class="gcard"><div class="gthumb">▶</div><div class="gname">业主采访：我家漏水那些年.mp4</div><div class="gmeta">03:05 · 52.7 MB · 3 天前</div><div class="gact"><button class="btn ghost small" onclick="switchPage('publish')">去发布</button></div></div>
+    <div class="gcard"><div class="gthumb">▶</div><div class="gname">工地日常：材料进场.mp4</div><div class="gmeta">00:44 · 12.9 MB · 4 天前</div><div class="gact"><button class="btn ghost small" onclick="switchPage('publish')">去发布</button></div></div>
+  </div>
+</section>
+
+<!-- ============ 5. 账号 ============ -->
+<section class="page" id="page-accounts">
+  <div class="pagehead"><h2>账号</h2><span class="chip">扫码登录一次，长期有效</span></div>
+  <div class="ggrid">
+    <div class="gcard acard"><div class="alogo">🎵</div><div style="flex:1"><div class="gname">抖音 <span class="badge ok">已登录</span></div><div class="gmeta">居帮帮官方号</div></div><button class="btn ghost small" onclick="toast('原型演示：重新登录')">重登</button></div>
+    <div class="gcard acard"><div class="alogo">📺</div><div style="flex:1"><div class="gname">视频号 <span class="badge ok">已登录</span></div><div class="gmeta">毛哥的视频号</div></div><button class="btn ghost small" onclick="toast('原型演示：重新登录')">重登</button></div>
+    <div class="gcard acard"><div class="alogo">⚡</div><div style="flex:1"><div class="gname">快手 <span class="badge warn">未登录</span></div><div class="gmeta">居帮帮官方</div></div><button class="btn primary small" onclick="toast('原型演示：弹出二维码')">扫码登录</button></div>
+    <div class="gcard acard"><div class="alogo">📕</div><div style="flex:1"><div class="gname">小红书 <span class="badge ok">已登录</span></div><div class="gmeta">居帮帮家装</div></div><button class="btn ghost small" onclick="toast('原型演示：重新登录')">重登</button></div>
+    <div class="gcard acard"><div class="alogo">🌀</div><div style="flex:1"><div class="gname">微博 <span class="badge warn">未绑定</span></div><div class="gmeta">—</div></div><button class="btn primary small" onclick="toast('原型演示：弹出二维码')">扫码绑定</button></div>
+    <div class="gcard acard"><div class="alogo">🎞️</div><div style="flex:1"><div class="gname">哔哩哔哩 <span class="badge warn">未登录</span></div><div class="gmeta">居帮帮官方</div></div><button class="btn primary small" onclick="toast('原型演示：弹出二维码')">扫码登录</button></div>
+    <div class="gcard acard"><div class="alogo">🍉</div><div style="flex:1"><div class="gname">西瓜视频 <span class="badge warn">未绑定</span></div><div class="gmeta">—</div></div><button class="btn primary small" onclick="toast('原型演示：弹出二维码')">扫码绑定</button></div>
+    <div class="gcard acard" style="border-style:dashed;justify-content:center;color:var(--text2);cursor:pointer" onclick="toast('原型演示：添加账号')">＋ 添加账号（同平台可多个）</div>
+  </div>
+</section>
+
+<!-- ============ 6. 设置 ============ -->
+<section class="page" id="page-settings">
+  <div class="pagehead"><h2>设置</h2></div>
+  <div class="card">
+    <div class="srow"><span class="sname">访问口令</span><span class="sdesc">打开工具需输入口令（防止误操作）</span><span class="switch"></span></div>
+    <div class="srow"><span class="sname">发布完成通知</span><span class="sdesc">本机弹窗 ✔ · 企微 ✔ · 飞书 ✔ —— 发完即时推（含每平台成功/失败明细）</span><span class="switch on"></span></div>
+    <div class="srow"><span class="sname">数据播报（定期）</span><span class="sdesc">每天 20:00 推前一天发布的视频数据（播放/点赞/评论）→ 企微＋飞书</span><span class="switch on"></span><button class="btn ghost small" onclick="toast('原型演示：调整频率与时间')">调整</button></div>
+    <div class="srow"><span class="sname">通知账号绑定</span><span class="sdesc" id="bindRowDesc">企微 ✔「居帮帮 · 发布助手」 ｜ 飞书 ✔「大满贯」</span><button class="btn ghost small" onclick="openBindModal()">绑定</button></div>
+    <div class="srow"><span class="sname">拟人节奏</span><span class="sdesc">平台间隔随机 60–180 秒 · 顺序打散 · 单账号日更不超 2 条</span><span class="switch on"></span></div>
+    <div class="srow"><span class="sname">数据抓取</span><span class="sdesc">每 6 小时自动回抓各平台数据</span><span class="switch on"></span></div>
+    <div class="srow"><span class="sname">存储路径</span><span class="sdesc">F:\短视频发布工具\data（视频、登录态、记录均在本机）</span><button class="btn ghost small" onclick="toast('原型演示：更改路径')">更改</button></div>
+    <div class="srow"><span class="sname">日志</span><span class="sdesc">操作日志 / 错误日志</span><button class="btn ghost small" onclick="toast('原型演示：查看日志')">查看</button></div>
+    <div class="srow"><span class="sname">使用说明</span><span class="sdesc">首次使用流程与常见问题</span><button class="btn ghost small" onclick="toast('原型演示：打开说明')">打开</button></div>
+  </div>
+</section>
+
+</main>
+
+<!-- 弹层 -->
+<div class="mask" id="mask">
+  <div class="modal">
+    <div class="modal-head"><b>发布确认</b><span class="x" onclick="closeModal()">✕</span></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot" id="modalFoot"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var PLAT_NAMES = {douyin:'抖音', channels:'视频号', kuaishou:'快手', xhs:'小红书', weibo:'微博', toutiao:'头条号', bilibili:'哔哩哔哩', xigua:'西瓜视频'};
+
+function toast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(function(){ t.classList.remove('show'); }, 1800);
+}
+
+/* ---- 导航 ---- */
+function switchPage(name){
+  document.querySelectorAll('.nav-item').forEach(function(n){
+    n.classList.toggle('active', n.dataset.page === name);
+  });
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('show'); });
+  document.getElementById('page-' + name).classList.add('show');
+  document.querySelector('main').scrollTop = 0;
+}
+document.querySelectorAll('.nav-item').forEach(function(n){
+  n.addEventListener('click', function(){ switchPage(n.dataset.page); });
+});
+
+/* ---- 主题（明暗切换）---- */
+document.querySelectorAll('#themeBox .topt').forEach(function(el){
+  el.addEventListener('click', function(){
+    var t = el.dataset.t;
+    document.documentElement.setAttribute('data-theme', t);
+    document.querySelectorAll('#themeBox .topt').forEach(function(x){
+      x.classList.toggle('active', x.dataset.t === t);
+    });
+    toast(t === 'dark' ? '已切换到暗色模式' : '已切换到亮色模式');
+  });
+});
+
+/* ---- 平台勾选 <-> 文案 tab 联动 ---- */
+function currentPlats(){
+  return Array.prototype.map.call(document.querySelectorAll('.plat input:checked'), function(i){ return i.dataset.plat; });
+}
+function renderTabs(keep){
+  var checked = currentPlats();
+  var tabsEl = document.getElementById('copyTabs');
+  var panesEl = document.getElementById('copyPanes');
+  var active = keep;
+  if(!active || (active !== 'common' && checked.indexOf(active) === -1)) active = 'common';
+  tabsEl.querySelectorAll('.tab:not([data-plat=common])').forEach(function(t){ t.remove(); });
+  panesEl.querySelectorAll('.pane:not([data-plat=common])').forEach(function(p){ p.remove(); });
+  Object.keys(PLAT_NAMES).forEach(function(k){
+    var isOn = checked.indexOf(k) !== -1;
+    var tab = document.createElement('div');
+    tab.className = 'tab' + (isOn ? '' : ' off');
+    tab.dataset.plat = k;
+    tab.textContent = (isOn ? '' : '＋') + PLAT_NAMES[k];
+    tabsEl.appendChild(tab);
+    if(OVERRIDES[k]){ tab.classList.add('done'); }
+    if(isOn){
+      var pane = document.createElement('div');
+      pane.className = 'pane'; pane.dataset.plat = k; pane.style.display = 'none';
+      pane.innerHTML = '<div class="mhint" style="margin-bottom:8px">默认继承「通用」文案；下面留空 = 用通用，填了就覆盖。</div>'
+        + '<div class="field"><label>标题（可选覆盖）</label><input type="text" class="ov-title" placeholder="留空 = 用通用标题"></div>'
+        + '<div class="field"><label>正文（可选覆盖）</label><textarea class="ov-body" placeholder="留空 = 用通用正文"></textarea></div>'
+        + '<div class="field"><label>话题（可选覆盖）</label><input type="text" class="ov-topic" placeholder="留空 = 用通用话题"></div>'
+        + '<div class="mhint">平台专属字段（如 B站分区、抖音 POI）也会出现在这一栏。</div>';
+      if(OVERRIDES[k]){
+        pane.querySelector('.ov-title').value = OVERRIDES[k].title || '';
+        pane.querySelector('.ov-body').value = OVERRIDES[k].body || '';
+        pane.querySelector('.ov-topic').value = OVERRIDES[k].topic || '';
+      }
+      (function(pl, pn){
+        var sync = function(){
+          OVERRIDES[pl] = { title: pn.querySelector('.ov-title').value, body: pn.querySelector('.ov-body').value, topic: pn.querySelector('.ov-topic').value };
+        };
+        pn.querySelectorAll('.ov-title,.ov-body,.ov-topic').forEach(function(el){ el.addEventListener('input', sync); });
+      })(k, pane);
+      panesEl.appendChild(pane);
+    }
+  });
+  selectTab(active);
+  document.getElementById('platCount').textContent = checked.length;
+}
+function selectTab(key){
+  document.querySelectorAll('#copyTabs .tab').forEach(function(t){
+    t.classList.toggle('active', t.dataset.plat === key);
+  });
+  document.querySelectorAll('#copyPanes .pane').forEach(function(p){
+    p.style.display = (p.dataset.plat === key) ? 'block' : 'none';
+  });
+}
+document.getElementById('copyTabs').addEventListener('click', function(e){
+  var t = e.target.closest('.tab'); if(!t) return;
+  var k = t.dataset.plat;
+  if(k === 'common'){ selectTab('common'); return; }
+  if(t.classList.contains('off')){
+    var cb = document.querySelector('.plat input[data-plat="' + k + '"]');
+    if(cb && !cb.checked){ cb.checked = true; renderTabs(k); toast('已把「' + PLAT_NAMES[k] + '」加入发布'); }
+  } else {
+    selectTab(k);
+  }
+});
+document.querySelectorAll('.plat input').forEach(function(i){
+  i.addEventListener('change', function(){ renderTabs(); });
+});
+
+/* ---- 标题字数 ---- */
+var titleInput = document.getElementById('titleInput');
+titleInput.addEventListener('input', function(){
+  document.getElementById('titleCount').textContent = titleInput.value.length;
+});
+
+/* ---- 话题 chips ---- */
+document.querySelectorAll('.tchip').forEach(function(c){
+  c.addEventListener('click', function(){
+    var t = document.getElementById('topicInput');
+    var v = c.textContent;
+    if(t.value.indexOf(v) === -1){ t.value = (t.value ? t.value + ' ' : '') + v; }
+  });
+});
+
+/* ---- 发布方式 ---- */
+document.querySelectorAll('input[name=when]').forEach(function(r){
+  r.addEventListener('change', function(){
+    var v = document.querySelector('input[name=when]:checked').value;
+    document.getElementById('timerow').classList.toggle('show', v === 'schedule');
+  });
+});
+
+/* ---- 一键生成各平台文案（模拟 AI） ---- */
+var OVERRIDES = {};
+var PLAT_VARIANTS = {
+  douyin: {title:'防水总返工？90%的人漏了这3个节点', body:'管根、阴角、门槛石——渗漏重灾区！现场实拍教你标准做法，验收前必看。', topic:'#建筑修缮 #防水补漏 #装修避坑 #居帮帮'},
+  channels: {title:'防水施工的3个关键节点', body:'很多业主以为刷两遍防水就够，其实管根、阴角、门槛石最容易漏。现场实拍讲标准做法，建议收藏。', topic:'#建筑修缮 #防水'},
+  kuaishou: {title:'卫生间防水别做错！3个节点要盯紧', body:'刷两遍就完事？管根、阴角、门槛石没做好，全白费！现场实拍给你看标准做法。', topic:'#防水补漏 #装修'},
+  xhs: {title:'卫生间防水避坑｜这3个节点不做对全白费🧐', body:'很多姐妹以为刷两遍防水就完事😭 其实管根、阴角、门槛石才是渗漏重灾区！现场实拍讲标准做法，验收照这个看✅ 收藏起来装修少踩坑～', topic:'#卫生间防水 #装修避坑 #防水补漏 #装修干货 #居帮帮'},
+  weibo: {title:'#装修避坑# 防水刷两遍就够？错！', body:'管根、阴角、门槛石三个节点最容易漏，现场实拍讲清标准做法。#建筑修缮# #防水补漏#', topic:'#建筑修缮# #防水补漏#'},
+  toutiao: {title:'卫生间防水施工：3个关键节点标准做法详解', body:'防水返工多因细节没做到位。结合现场实拍，详解管根、阴角、门槛石三个节点的标准做法与验收要点。', topic:'建筑修缮 防水补漏'},
+  bilibili: {title:'【防水避坑】这3个节点做不对，刷几遍都白费（现场实拍）', body:'管根、阴角、门槛石，是卫生间防水最容易漏的地方。本期用现场实拍讲清标准做法，装修、验收都用得上。', topic:'建筑修缮 防水 装修'},
+  xigua: {title:'卫生间防水的3个关键节点，现场实拍详解', body:'刷两遍防水不等于不漏水。管根、阴角、门槛石三个节点不做对，全都白费。现场实拍标准做法。', topic:'建筑修缮 防水'}
+};
+document.getElementById('genAllBtn').addEventListener('click', function(){
+  var all = Object.keys(PLAT_NAMES);
+  all.forEach(function(k){ OVERRIDES[k] = Object.assign({}, PLAT_VARIANTS[k] || {title:'', body:'', topic:''}); });
+  var checked = currentPlats();
+  renderTabs(checked.length ? checked[0] : 'common');
+  toast('已生成全部 ' + all.length + ' 个平台的版本（每平台一版；勾选哪些就发哪些）');
+});
+
+/* ---- 视频选择 ---- */
+document.getElementById('fileInput').addEventListener('change', function(e){
+  var f = e.target.files[0]; if(!f) return;
+  document.getElementById('vName').textContent = f.name;
+  document.getElementById('vMeta').textContent = (f.size/1048576).toFixed(1) + ' MB · 已读取（原型演示）';
+  toast('视频已载入（原型仅演示）');
+});
+
+/* ---- 预览确认 & 模拟发布 ---- */
+function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function openModal(){ document.getElementById('mask').classList.add('open'); }
+function closeModal(){ document.getElementById('mask').classList.remove('open'); }
+
+document.getElementById('btnPreview').addEventListener('click', function(){
+  var plats = currentPlats();
+  if(!plats.length){ toast('先勾选至少一个平台'); return; }
+  var title = titleInput.value || '（未填标题）';
+  var body = document.getElementById('bodyInput').value || '';
+  var topics = document.getElementById('topicInput').value || '（未填）';
+  var cards = plats.map(function(p){
+    var o = OVERRIDES[p] || {};
+    var own = (o.title && o.title.trim()) || (o.body && o.body.trim()) || (o.topic && o.topic.trim());
+    var t = (o.title && o.title.trim()) ? o.title : title;
+    var b = (o.body && o.body.trim()) ? o.body : body;
+    var tp = (o.topic && o.topic.trim()) ? o.topic : topics;
+    return '<div class="ccard"><div class="crow"><b>' + PLAT_NAMES[p] + '</b><span class="badge ok">就绪</span>' + (own ? '<span class="badge info">平台专属版</span>' : '<span class="badge info">通用版</span>') + '</div>'
+      + '<div class="cline">标题：' + esc(t) + '</div>'
+      + '<div class="cline">正文：' + esc(String(b).slice(0, 60)) + '…</div>'
+      + '<div class="cline">话题：' + esc(tp || '（未填）') + '</div>'
+      + '<div class="cline">封面：自动截帧（已选第 2 帧）</div></div>';
+  }).join('');
+  document.getElementById('modalBody').innerHTML = '<div class="mhint">以下内容将发往 ' + plats.length + ' 个平台，请过目：</div><div class="ccards">' + cards + '</div>';
+  document.getElementById('modalFoot').innerHTML = '<button class="btn ghost" onclick="closeModal()">返回修改</button><button class="btn primary" id="startPublishBtn">确认发布</button>';
+  document.getElementById('startPublishBtn').addEventListener('click', function(){ runPublish(plats); });
+  openModal();
+});
+
+function runPublish(plats){
+  var bodyEl = document.getElementById('modalBody');
+  bodyEl.innerHTML = '<div class="mhint">正在依次发布（原型模拟 · 实际会打开各平台创作者后台操作）：</div><div id="prog"></div>';
+  document.getElementById('modalFoot').innerHTML = '';
+  var prog = document.getElementById('prog');
+  var steps = ['打开创作者中心', '上传视频', '填写标题与话题', '提交发布'];
+  var i = 0;
+  function nextPlat(){
+    if(i >= plats.length){
+      bodyEl.insertAdjacentHTML('beforeend', '<div class="done">✅ 全部完成：' + plats.length + ' 个平台发布成功，0 失败</div>');
+      document.getElementById('modalFoot').innerHTML = '<button class="btn ghost" onclick="switchPage(\'records\');closeModal()">查看记录</button><button class="btn primary" onclick="closeModal()">完成</button>';
+      return;
+    }
+    var row = document.createElement('div'); row.className = 'prow';
+    row.innerHTML = '<div class="pname">' + PLAT_NAMES[plats[i]] + '</div><div class="psteps"></div><div class="pstat">进行中…</div>';
+    prog.appendChild(row);
+    var stepEl = row.querySelector('.psteps'); var stat = row.querySelector('.pstat');
+    var s = 0;
+    (function tick(){
+      if(s < steps.length){
+        stepEl.insertAdjacentHTML('beforeend', '<span class="step"><i class="spin"></i>' + steps[s] + '</span>');
+        s++; setTimeout(tick, 720 + Math.random() * 420);
+      } else {
+        stat.textContent = '✅ 成功'; stat.classList.add('ok');
+        i++; setTimeout(nextPlat, 420);
+      }
+    })();
+  }
+  nextPlat();
+}
+
+/* ---- 绑定管理（绑定账号：谁用谁扫码；绑定后一键配置推送） ---- */
+var BIND = { wx: '居帮帮 · 发布助手', fs: '大满贯' };
+function updateBindRow(){
+  document.getElementById('bindRowDesc').innerHTML = '企微 ✔「' + BIND.wx + '」 ｜ 飞书 ✔「' + BIND.fs + '」';
+}
+function openBindModal(){
+  renderBindModal();
+  openModal();
+}
+function renderBindModal(){
+  document.getElementById('modalBody').innerHTML =
+    '<div class="mhint"><b>谁用谁扫</b>：把工具拿给谁用，就让他扫码绑上自己的账号，绑好即用。</div>'
+    + '<div class="ccard" style="margin-bottom:10px"><div class="crow"><b>企业微信</b><span class="badge ok">已绑定</span></div>'
+    + '<div class="cline" style="margin-top:8px;display:flex;align-items:center;justify-content:space-between"><span>' + BIND.wx + '</span><button class="btn ghost small" id="bindWxBtn">扫码绑定</button></div>'
+    + '</div>'
+    + '<div class="ccard"><div class="crow"><b>飞书</b><span class="badge ok">已绑定</span></div>'
+    + '<div class="cline" style="margin-top:8px;display:flex;align-items:center;justify-content:space-between"><span>' + BIND.fs + '</span><button class="btn ghost small" id="bindFsBtn">扫码绑定</button></div>'
+    + '</div>'
+    + '<div class="mhint" style="margin-top:10px">绑定后一键配置推送：发布完成通知 ＋ 数据播报（每天 20:00）都会推到绑定账号。</div>';
+  document.getElementById('modalFoot').innerHTML = '<button class="btn ghost" onclick="closeModal()">关闭</button>';
+  var wxBtn = document.getElementById('bindWxBtn');
+  var fsBtn = document.getElementById('bindFsBtn');
+  if(wxBtn){ wxBtn.addEventListener('click', function(){ showScan('wx'); }); }
+  if(fsBtn){ fsBtn.addEventListener('click', function(){ showScan('fs'); }); }
+}
+function showScan(kind){
+  drawScanPanel(kind, 'qr');
+}
+function drawScanPanel(kind, state, name){
+  var isWx = (kind === 'wx');
+  var old = document.getElementById('scanPanel');
+  if(old){ old.remove(); }
+  var body;
+  if(state === 'qr'){
+    body = '<div class="crow"><b>' + (isWx ? '企业微信' : '飞书') + ' · 扫码绑定</b><span class="badge warn">等待扫码</span></div>'
+      + '<div style="font-size:36px;letter-spacing:8px;margin:12px 0;color:var(--text2)">▦▦▦<br>▦▦▦</div>'
+      + '<div class="mhint">用要绑定的账号扫一下即可（谁用谁扫）</div>'
+      + '<button class="btn primary small" id="scanDoneBtn" style="margin-top:10px">模拟扫码完成</button>';
+  } else if(state === 'bound'){
+    body = '<div class="crow"><b>' + (isWx ? '企业微信' : '飞书') + ' · 绑定成功</b><span class="badge ok">已绑定</span></div>'
+      + '<div style="margin:10px 0">✔ 已绑定「' + name + '」</div>'
+      + '<button class="btn primary small" id="configPushBtn">一键配置推送消息</button>'
+      + '<div class="mhint" style="margin-top:8px">点一下＝开启推送：发布完成通知 ＋ 数据播报（每天 20:00），都推给绑定账号</div>';
+  } else {
+    body = '<div class="crow"><b>' + (isWx ? '企业微信' : '飞书') + ' · 全部完成</b><span class="badge ok">推送已开启</span></div>'
+      + '<div style="margin:10px 0">✔ 已绑定「' + name + '」<br>✔ 推送已配置：发布完成通知 ＋ 数据播报（每天 20:00）</div>'
+      + '<button class="btn primary small" id="finishBtn">完成</button>';
+  }
+  document.getElementById('modalBody').insertAdjacentHTML('beforeend',
+    '<div class="ccard" style="margin-top:10px;text-align:center" id="scanPanel">' + body + '</div>');
+  if(state === 'qr'){
+    document.getElementById('scanDoneBtn').addEventListener('click', function(){
+      var nm = '新账号（演示）';
+      if(isWx){ BIND.wx = nm; } else { BIND.fs = nm; }
+      updateBindRow();
+      drawScanPanel(kind, 'bound', nm);
+      toast('绑定完成（原型演示）：已绑定「' + nm + '」');
+    });
+  } else if(state === 'bound'){
+    document.getElementById('configPushBtn').addEventListener('click', function(){
+      drawScanPanel(kind, 'done', name);
+      toast('推送已配置（原型演示）：发布完成通知 ＋ 数据播报，都推给「' + name + '」');
+    });
+  } else {
+    document.getElementById('finishBtn').addEventListener('click', function(){
+      closeModal();
+    });
+  }
+}
+
+/* ---- 设置开关 ---- */
+document.querySelectorAll('.switch').forEach(function(s){
+  s.addEventListener('click', function(){ s.classList.toggle('on'); });
+});
+
+/* ---- 初始化 ---- */
+renderTabs('common');
+</script>
+</body>
+</html>

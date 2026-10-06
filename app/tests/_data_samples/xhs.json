@@ -1,0 +1,110 @@
+{
+ "user": {
+  "result": 0,
+  "success": true,
+  "code": 0,
+  "data": {
+   "userId": "5cec85cc000000001003c184",
+   "userName": "樱甜萌兔",
+   "userAvatar": "https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31g8gdtdshs6g5n7cgn647gc421l09d0?imageView2/2/w/80/format/jpg",
+   "userDesc": "把日子过成诗，在每缕晨光与落日余晖里，藏进对生活的钟情。",
+   "redId": "350216504",
+   "role": "creator",
+   "permissions": [
+    "creatorCollege",
+    "creatorWiki",
+    "noteInspiration",
+    "skillHub",
+    "redApp",
+    "creatorHome",
+    "creatorData",
+    "USER_GROUP",
+    "creatorActivityCenter",
+    "AI_CHAPTER"
+   ],
+   "zone": "86",
+   "phone": "17785106985",
+   "relatedUserId": null,
+   "relatedUserName": null,
+   "realNameVerified": false,
+   "realNameVerifyLink": "xhsdiscover://account/realName/atomization?businessCode=capa_podcast",
+   "skillhubInfo": {
+    "realNameVerified": false,
+    "realNameVerifyUrl": "xhsdiscover://account/realName/atomization?businessCode=sns_skillhub"
+   },
+   "redAppInfo": {
+    "realNameVerified": false,
+    "realNameVerifyUrl": "xhsdiscover://account/realName/atomization?businessCode=sns_vibe_app"
+   },
+   "longAudioConfig": {
+    "audioMinSeconds": 600,
+    "audioFileMaxSize": 1024.0,
+    "audioMaxSeconds": 7200,
+    "hasAudio": true,
+    "summaryMaxDurationSeconds": 10800,
+    "needRealName": false
+   },
+   "cocreate": null,
+   "advertiseBlockConfig": null,
+   "kolCoOrder": false
+  }
+ },
+ "posted": {
+  "code": 0,
+  "success": true,
+  "msg": "成功",
+  "data": {
+   "tags": [
+    {
+     "id": "special.note_time_desc",
+     "name": "所有笔记",
+     "notes_count": 3,
+     "checked": true
+    }
+   ],
+   "notes": [
+    {
+     "id": "6809eb4c000000001d02d7a3",
+     "type": "normal",
+     "display_title": "自家外墙漏水，有没有姐妹和我一样的",
+     "time": "2025-04-24 15:42",
+     "visible_time": 1745480571,
+     "view_count": 148,
+     "likes": 7,
+     "comments_count": 4,
+     "collected_count": 1,
+     "shared_count": 1,
+     "tab_status": 1
+    },
+    {
+     "id": "67ff5b1e000000001a005cdd",
+     "type": "normal",
+     "display_title": "有修复的姐妹能告诉我吗",
+     "time": "2025-04-16 15:24",
+     "visible_time": 1744788302,
+     "view_count": 73,
+     "likes": 4,
+     "comments_count": 5,
+     "collected_count": 0,
+     "shared_count": 0,
+     "tab_status": 1
+    },
+    {
+     "id": "67fcc68d000000001d015664",
+     "type": "normal",
+     "display_title": "这样的墙面要维修吗？在贵阳，有人知道吗",
+     "time": "2025-04-14 16:25",
+     "visible_time": 1744619199,
+     "view_count": 56,
+     "likes": 1,
+     "comments_count": 2,
+     "collected_count": 0,
+     "shared_count": 1,
+     "tab_status": 1
+    }
+   ],
+   "page": -1,
+   "has_more": null
+  }
+ }
+}

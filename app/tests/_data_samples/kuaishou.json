@@ -1,0 +1,46 @@
+{
+ "info": {
+  "result": 1,
+  "message": "成功",
+  "data": {
+   "coreUserInfo": {
+    "userName": "炒鸡玛立",
+    "userId": 631337697,
+    "fansNum": 14
+   }
+  }
+ },
+ "works": {
+  "result": 1,
+  "message": "成功",
+  "data": {
+   "list": [
+    {
+     "workId": "3xqd8sszgqbf2hu",
+     "title": "测试\n#测试 ",
+     "uploadTime": 1790734528913,
+     "playCount": 1,
+     "likeCount": 0,
+     "commentCount": 0
+    },
+    {
+     "workId": "3xdvwq5w2wz3c2a",
+     "title": "老铁们，咱今儿个就测试测试！\n\n测试测试，就是这么个测试。\n\n都来瞅瞅，看看到底咋样。\n#测试测试 ",
+     "uploadTime": 1790651968524,
+     "playCount": 316,
+     "likeCount": 0,
+     "commentCount": 2
+    },
+    {
+     "workId": "3xnb3pzwuexnjrq",
+     "title": "老铁们，今儿个咱聊聊写接口。\n写接口这事儿吧，说难也不难，说简单也不简单。\n反正就是干这个的，天天跟接口打交道。\n有懂的老乡没？评论区唠唠。\n#写接口 ",
+     "uploadTime": 1790584439402,
+     "playCount": 1899,
+     "likeCount": 12,
+     "commentCount": 1
+    }
+   ],
+   "total": 3
+  }
+ }
+}

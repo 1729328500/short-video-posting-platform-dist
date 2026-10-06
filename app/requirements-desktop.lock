@@ -1,0 +1,11 @@
+# Desktop production runtime, Python 3.12 x64. Update runtime with any change here.
+playwright==1.63.0
+patchright==1.63.0
+pyee==13.0.1
+greenlet==3.5.6
+typing_extensions==4.16.0
+requests==2.34.2
+charset-normalizer==3.5.1
+idna==3.10
+urllib3==2.8.0
+certifi==2026.7.22

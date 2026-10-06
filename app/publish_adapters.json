@@ -1,0 +1,173 @@
+{
+  "note": "各平台发布页适配参数。平台改版时只改本文件，不用改代码。calibrated=false 表示选择器还没在真机上校准过，worker 会走通用兜底并在日志里记下找到了什么。",
+  "defaults": {
+    "wait_after_goto": 6,
+    "wait_after_upload": 12,
+    "file_input": "input[type=file][accept*='video']",
+    "file_input_fallback": "input[type=file]",
+    "title_input": "input[placeholder*='标题']",
+    "body_editor": "[contenteditable=true]",
+    "submit_text": "发布",
+    "cover_trigger": "",
+    "cover_file_input": "input[type=file][accept*='image']",
+    "cover_confirm": "",
+    "wait_after_cover_trigger": 2,
+    "wait_after_cover_upload": 5
+  },
+  "platforms": {
+    "douyin": {
+      "name": "抖音",
+      "calibrated": true,
+      "calibrated_at": "2026-09-27 真机（已登录账号实测）",
+      "publish_url": "https://creator.douyin.com/creator-micro/content/upload",
+      "file_input": "input[type=file][accept*='video']",
+      "title_input": "input[placeholder*='填写作品标题']",
+      "body_editor": "[contenteditable=true].zone-container",
+      "submit_text": "发布",
+      "submit_button": "button:has-text('发布')",
+      "visibility_selector_template": "label:has-text('{text}')",
+      "visibility": {
+        "public": "公开",
+        "friends": "好友可见",
+        "private": "仅自己可见"
+      },
+      "after_submit_wait": 10,
+      "submit_success_hints": [
+        "发布成功",
+        "作品管理",
+        "审核中",
+        "已发布"
+      ],
+      "manage_url": "https://creator.douyin.com/creator-micro/content/manage",
+      "verify_dialog_hints": [
+        "接收短信验证码",
+        "短信验证码",
+        "为确保是本人操作",
+        "请输入验证码",
+        "使用原设备扫码",
+        "获取验证码"
+      ],
+      "topics_as_text": true,
+      "note": "上传后会自动跳到 /creator-micro/content/publish，标题与正文都在那一页",
+      "_manage_note": "2026-09-29 从上游 vendored 代码里拿到（它的\"成功\"判据就是等这个 URL）—— 用于 SAU 跑完后的**独立核验**：去这页查标题在不在列表里。其余 SAU 平台**留空**（没有证据就不猜，界面上会照实说\"未独立核验\"）。"
+    },
+    "channels": {
+      "name": "视频号",
+      "calibrated": false,
+      "publish_url": "https://channels.weixin.qq.com/platform/post/create",
+      "note": "待真机校准"
+    },
+    "kuaishou": {
+      "name": "快手",
+      "calibrated": false,
+      "publish_url": "https://cp.kuaishou.com/article/publish/video",
+      "note": "待真机校准"
+    },
+    "xhs": {
+      "name": "小红书",
+      "calibrated": false,
+      "publish_url": "https://creator.xiaohongshu.com/publish/publish",
+      "note": "待真机校准"
+    },
+    "weibo": {
+      "name": "微博",
+      "calibrated": false,
+      "publish_url": "https://weibo.com/upload/channel",
+      "note": "待真机校准"
+    },
+    "bilibili": {
+      "name": "哔哩哔哩",
+      "calibrated": false,
+      "publish_url": "https://member.bilibili.com/platform/upload/video/frame",
+      "note": "待真机校准（B 站分区/标签是必填，比别的平台多一步）",
+      "entry_url": "https://member.bilibili.com/platform/home",
+      "entry_hover": "div.nav-upload-btn",
+      "entry_click": "div.nav-upload-container a.nav-upload-item:has-text('视频投稿')",
+      "wait_after_entry_hover": 2,
+      "wait_after_entry_click": 6,
+      "file_input": "input[type=file][accept*='.mp4']",
+      "_entry_note": "2026-09-28 真机实测通过：落在 /platform/home → 悬停左侧「投稿」→ 点「视频投稿」→ 跳到 /platform/upload/video/frame。★ 该页 3 个 input[type=file]：第 0 个 display:none（父 .bcc-upload-wrapper），第 1 个才是可见的；accept 是扩展名列表，故 file_input 改写成 .mp4。",
+      "submit_text": "立即投稿",
+      "submit_button": "span.submit-add",
+      "_submit_note": "2026-09-29 从 job_41.hold.html 标定：真实按钮是 span.submit-add「立即投稿」，**不是 button**、也不是「发布」—— 原来 submit_text 缺失导致按「发布」找，永远找不到（job41 steps 里的「没找到【发布】按钮」）。",
+      "declaration_trigger": "div.statement-content .bcc-select-input-wrap",
+      "declaration_option": "含AI生成内容",
+      "_declaration_note": "2026-09-29 从 job_53.hold.html 标定：B站「创作声明」是表单里一个**必填**（带 *）的 bcc-select 下拉，选项是 li.bcc-option（含「内容无需标注」/「含AI生成内容」/「内容为转载」…）。不选就点【立即投稿】没反应 —— job_53 因此变成 manual（用户原话：\"点提交会让你选创作声明，没选就一直卡在那里\"）。选完**回读输入框**（.bcc-select-input-inner）当自证。"
+    },
+    "xigua": {
+      "name": "西瓜视频",
+      "calibrated": false,
+      "strategy": "B-共用后台",
+      "inherits": "douyin",
+      "profile_key": "douyin",
+      "publish_url": "https://creator.douyin.com/creator-micro/content/upload",
+      "file_input": "input[type=file][accept*='video']",
+      "title_input": "input[placeholder*='填写作品标题']",
+      "body_editor": "[contenteditable=true].zone-container",
+      "submit_text": "发布",
+      "visibility_selector_template": "label:has-text('{text}')",
+      "visibility": {
+        "public": "公开",
+        "friends": "好友可见",
+        "private": "仅自己可见"
+      },
+      "verify_dialog_hints": [
+        "接收短信验证码",
+        "短信验证码",
+        "为确保是本人操作",
+        "请输入验证码",
+        "获取验证码"
+      ],
+      "note": "2026-09-27 实测：studio.ixigua.com/ 与 /upload 全部 302 到 creator.douyin.com —— 西瓜的发布入口就是抖音创作者后台，故直接复用抖音那套选择器与同一个登录 profile。待真机确认发布页里是否需要额外勾选「同步到西瓜」。",
+      "modal_labels": [
+        "裁剪完成",
+        "完成裁剪",
+        "完成",
+        "确定"
+      ],
+      "_modal_note": "2026-09-29 从 job_47 steps 标定：封面弹窗里有个点不动的「确定」，真实按钮是裁剪完的那个 —— 我从 inner_text 读到的是「完成裁剪」，操作者在页面上看到的是「裁剪完成」+「完成」；**两种写法都留着**（精确匹配、按序取第一个命中），不赌谁读得准。确定排最后，只作兜底。"
+    },
+    "toutiao": {
+      "name": "头条号",
+      "calibrated": false,
+      "strategy": "C-同族后台",
+      "publish_url": "https://mp.toutiao.com/profile_v4/xigua/upload-video",
+      "file_input": "input[type=file][accept*='video']",
+      "title_input": "div.form-item-title input",
+      "body_editor": "[contenteditable=true]",
+      "submit_text": "发布",
+      "visibility_selector_template": "label:has-text('{text}')",
+      "visibility": {
+        "public": "公开",
+        "private": "仅自己可见"
+      },
+      "verify_dialog_hints": [
+        "接收短信验证码",
+        "短信验证码",
+        "请输入验证码",
+        "获取验证码",
+        "扫码登录"
+      ],
+      "note": "2026-09-27 侦察：mp.toutiao.com 有自己的登录页（不 302 到抖音），但它的视频上传路径是 /profile_v4/xigua/upload-video（复用西瓜模块），且登录页提供「抖音登录」入口 —— 不需要单独注册账号。选择器照抖音模板写，**必须真机校准**。",
+      "cover_trigger": "div.xigua-poster-editor div.fake-upload-trigger",
+      "_cover_note": "2026-09-28 拿头条发布页的真实 HTML（job_28.hold.html）标定：\n· 标题框 placeholder 是「请输入 1～30 个字符」，所以默认的 placeholder*='标题' 匹配不上\n· 封面是**两步**：点 .fake-upload-trigger 里的「上传封面」→ 弹出 m-xigua-dialog\n  → 再点层里的「本地上传」→ 这时才创建图片型 file input\n\n· 弹层（#tc-ie-base-content）**不会自动关**，必须点里面的「确定」——否则它停在页面中间挡住下半截表单，表现为「标题填上了、正文点不动」。「重选封面」是 .btn-cancel，别点错。",
+      "entry_url": "https://mp.toutiao.com/profile_v4/",
+      "entry_hover": "div.byte-menu-inline.base_creation_tab",
+      "entry_click": "div.base_creation_tab div.byte-menu-item:has-text('视频')",
+      "wait_after_entry_hover": 2,
+      "wait_after_entry_click": 6,
+      "_entry_note": "2026-09-28 真机实测通过：落在 /profile_v4/ → 悬停左侧「创作」→ 点「视频」→ 跳到 /profile_v4/xigua/upload-video，页面上有 input[type=file][accept*=video]。★ 标题框/正文框在上传视频后才会渲染，所以 goTo 之后查不到它们是正常的。",
+      "cover_subtrigger": "text=本地上传",
+      "cover_confirm": "#tc-ie-base-content button:has-text('确定')",
+      "submit_button": "button.action-footer-btn.submit",
+      "_submit_note": "2026-09-29 从 job_40.hold.html 标定：发布按钮 class 含 action-footer-btn submit（语义类，无哈希）。带 span 子元素，所以 role 兜底也能中，但显式给更稳。",
+      "modal_labels": [
+        "裁剪完成",
+        "完成裁剪",
+        "完成",
+        "确定"
+      ],
+      "_modal_note": "2026-09-29 从 job_47 steps 标定：封面弹窗里有个点不动的「确定」，真实按钮是裁剪完的那个 —— 我从 inner_text 读到的是「完成裁剪」，操作者在页面上看到的是「裁剪完成」+「完成」；**两种写法都留着**（精确匹配、按序取第一个命中），不赌谁读得准。确定排最后，只作兜底。"
+    }
+  }
+}
