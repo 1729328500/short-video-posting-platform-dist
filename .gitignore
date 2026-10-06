@@ -1,0 +1,17 @@
+# Public distribution repository: ignore everything unless explicitly allowed.
+/*
+
+# Repository documentation and the existing license.
+!/.gitignore
+!/README.md
+!/LICENSE
+
+# Allow only a real, validated update manifest after a release exists.
+!/dist/
+/dist/*
+!/dist/version.json
+
+# Release notes are documentation; ZIP packages belong in Releases assets.
+!/release-notes/
+/release-notes/*
+!/release-notes/*.md
