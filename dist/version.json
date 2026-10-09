@@ -1,10 +1,10 @@
 {
-  "version": "1.11.3",
-  "zip": "app-1.11.3.zip",
-  "size": 335849,
-  "md5": "e30ea0c7d7c41506355f0d12184eb690",
-  "sha256": "6d273bce5a507ca2792c7c4dc0e69f9b7b2e30d42cae343b1f416eb47996db89",
+  "version": "1.11.4",
+  "zip": "app-1.11.4.zip",
+  "size": 335449,
+  "md5": "1476436dd41d44b8f5db0af534dfa989",
+  "sha256": "bf16e162330017743f748e37f6717a412febb4c4e5b83d17858f1069e0354dfd",
   "min_launcher": 2,
-  "url": "https://gitee.com/guizhou-jubangbang_0/short-video-posting-platform-dist/releases/download/v1.11.3/app-1.11.3.zip",
+  "url": "https://gitee.com/guizhou-jubangbang_0/short-video-posting-platform-dist/releases/download/v1.11.4/app-1.11.4.zip",
   "dependency_lock_sha256": "0999c6f9f8d41fa2e1585392f463a584bf1dec352fd0b9969b573bf17adefd89"
 }
